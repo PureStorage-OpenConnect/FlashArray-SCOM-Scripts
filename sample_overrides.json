@@ -1,0 +1,369 @@
+{
+  "monitor": {
+    "PureStorageFlashArray.ArrayOPSMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.HostIPSMonitor.Powershell": {
+      "TimeoutSeconds": 120,
+      "LogToArray": true,
+      "Threshold": 0,
+      "IntervalSeconds": 300
+    },
+    "PureStorageFlashArray.HostOPSMonitor.Powershell": {
+      "TimeoutSeconds": 120,
+      "LogToArray": true,
+      "Threshold": 0,
+      "IntervalSeconds": 300
+    },
+    "PureStorageFlashArray.VolumeIPSMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.AlertsRuleMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorageFlashArray.VolumeWriteBandwidthMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.ArrayReadBandwidthMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorage.FlashArray.TimedScript.PowerShell.ControllerMonitor": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.TimedScript.PowerShell.Monitor": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorageFlashArray.ArrayIPSMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.VolumeReadLatencyMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.HostReadBandwidthMonitor.Powershell": {
+      "TimeoutSeconds": 120,
+      "LogToArray": true,
+      "Threshold": 0,
+      "IntervalSeconds": 300
+    },
+    "PureStorageFlashArray.VolumeOPSMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.ArraySpaceMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.ArrayReadLatencyMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.VolumeReadBandwidthMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.ArrayWriteLatencyMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.ArrayWriteBandwidthMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorage.FlashArray.TimedScript.PowerShell.PortMonitor": {
+      "LogToArray": true,
+      "IntervalSeconds": 300,
+      "TimeoutSeconds": 120,
+      "IgnoreDisabledPorts": false
+    },
+    "PureStorageFlashArray.HostWriteBandwidthMonitor.Powershell": {
+      "TimeoutSeconds": 120,
+      "LogToArray": true,
+      "Threshold": 0,
+      "IntervalSeconds": 300
+    },
+    "PureStorageFlashArray.HostReadLatencyMonitor.Powershell": {
+      "TimeoutSeconds": 120,
+      "LogToArray": true,
+      "Threshold": 0,
+      "IntervalSeconds": 300
+    },
+    "PureStorageFlashArray.VolumeWriteLatencyMonitor.Powershell": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Threshold": 0
+    },
+    "PureStorageFlashArray.HostWriteLatencyMonitor.Powershell": {
+      "TimeoutSeconds": 120,
+      "LogToArray": true,
+      "Threshold": 0,
+      "IntervalSeconds": 300
+    }
+  },
+  "rule": {
+    "PureStorage.FlashArray.PureHost.PowerShell.Script.Perf.WriteBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.PowerShell.Script.SpaceMetrics.Capacity.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.PowerShell.Script.Perf.ReadBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHostgroup.PowerShell.Script.Perf.OutputPerSecond.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.PowerShell.Script.Perf.WriteLatency.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureVolume.PowerShell.Script.Perf.TotalBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.GetHistoryAlertRuleCritical": {
+      "Priority": 0,
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Severity": 0
+    },
+    "PureStorage.FlashArray.PureHostgroup.PowerShell.Script.Perf.WriteLatency.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.PowerShell.Script.Perf.TotalBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureVolume.PowerShell.Script.Perf.InputPerSecond.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHostgroup.PowerShell.Script.Perf.WriteBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHostgroup.PowerShell.Script.Perf.TotalIOPS.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.PowerShell.Script.Perf.InputPerSecond.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.PowerShell.Script.Perf.WriteBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHost.PowerShell.Script.Perf.TotalIOPS.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.PowerShell.Script.SpaceMetrics.UsedSpace.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.GetHistoryAlertRuleWarning": {
+      "Priority": 0,
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "Severity": 0
+    },
+    "PureStorage.FlashArray.PureArray.PowerShell.Script.Perf.ReadLatency.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHostgroup.PowerShell.Script.Perf.ReadBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureVolume.PowerShell.Script.Perf.ReadLatency.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHost.PowerShell.Script.Perf.InputPerSecond.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHostgroup.PowerShell.Script.Perf.InputPerSecond.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureVolume.PowerShell.Script.Perf.WriteBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHost.PowerShell.Script.Perf.WriteLatency.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHostgroup.PowerShell.Script.Perf.TotalBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHost.PowerShell.Script.Perf.ReadLatency.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureVolume.PowerShell.Script.Perf.WriteLatency.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHost.PowerShell.Script.Perf.TotalBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureVolume.PowerShell.Script.Perf.OutputPerSecond.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHost.PowerShell.Script.Perf.OutputPerSecond.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.PowerShell.Script.Perf.TotalIOPS.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureVolume.PowerShell.Script.Perf.TotalIOPS.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHost.PowerShell.Script.Perf.ReadBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureArray.PowerShell.Script.Perf.OutputPerSecond.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureHostgroup.PowerShell.Script.Perf.ReadLatency.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    },
+    "PureStorage.FlashArray.PureVolume.PowerShell.Script.Perf.ReadBandwidth.Rule": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300
+    }
+  },
+  "discovery": {
+    "PureStorage.FlashArray.PurePort.Instances.Group.Discovery": {
+    },
+    "PureStorage.FlashArray.PureArray.Instances.Group.Discovery": {
+    },
+    "PureStorage.FlashArray.PureController.Instances.Group.Discovery": {
+    },
+    "PureStorage.FlashArray.PureArray.Discovery": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "SyncTime": 0
+    },
+    "PureStorage.FlashArray.PureHost.Discovery": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "SyncTime": 0
+    },
+    "PureStorage.FlashArray.PureVolume.Instances.Group.Discovery": {
+    },
+    "PureStorage.FlashArray.PureController.Discovery": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "SyncTime": 0
+    },
+    "PureStorage.FlashArray.PureVolume.Discovery": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "SyncTime": 0
+    },
+    "PureStorage.FlashArray.PureHost.Instances.Group.Discovery": {
+    },
+    "PureStorage.FlashArray.PureHostgroup.Instances.Group.Discovery": {
+    },
+    "PureStorage.FlashArray.PurePort.Discovery": {
+      "LogToArray": true,
+      "TimeoutSeconds": 120,
+      "IntervalSeconds": 300,
+      "SyncTime": 0
+    }
+  }
+}
