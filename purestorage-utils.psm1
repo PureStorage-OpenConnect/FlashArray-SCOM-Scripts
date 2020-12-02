@@ -140,7 +140,7 @@ function Set-DiscoveriesLogToArrayOverrides {
     }
 }
 
-$INITIAL_DISCOVERY_SCRIPT_REGEX = '(?s)<ScriptName>PureStorage\.FlashArray\.PureArray\.Discovery\.ps1</ScriptName>.*<ScriptBody>(?<script>.*)</ScriptBody>'
+$INITIAL_DISCOVERY_SCRIPT_REGEX = '(?s)<ScriptName>PureStorage\.FlashArray\.PureArray\.Discovery\.ps1</ScriptName>.*?<ScriptBody>(?<script>.*?)</ScriptBody>'
 function New-TemporaryDirectory {
     $parent = [System.IO.Path]::GetTempPath()
     [string]$name = [System.Guid]::NewGuid()
