@@ -1,5 +1,6 @@
 {
     "id": "FlashArray-SCOM-Scripts",
+    "name": "FlashArray SCOM Scripts",
     "filter": "devops microsoft",
     "image": "http://code.purestorage.com/images/30_scom.png",
     "featured": 0,
