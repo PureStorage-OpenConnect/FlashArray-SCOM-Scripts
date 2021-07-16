@@ -1,14 +1,17 @@
 <#
-.SYNOPSIS
   Helper functions to facilitate managing purestorage management pack overrides
-.DESCRIPTION
-  Helper functions to facilitate managing purestorage management pack overrides
-  Version:        1.0
+  Version:        1.0.1.0
   Author:         Hesham Anan, Mike Nelson @ Pure Storage
-<#
+
+  Last Update: 6-2021
+  - Added help clarifications, fixed syntax, added new and better prompts
+
 .DISCLAIMER
 You running this code means you will not blame the author(s) if this breaks your stuff. This script/function is provided AS IS without warranty of any kind. Author(s) disclaim all implied warranties including, without limitation, any implied warranties of merchantability or of fitness for a particular purpose. The entire risk arising out of the use or performance of the sample scripts and documentation remains with you. In no event shall author(s) be held liable for any damages whatsoever arising out of the use of or inability to use the script or documentation.
+This code is not officially supported by Pure Storage.
 #>
+
+#### HELPER FUNCTIONS
 function CreateManagementPack {
     param (
         $Name
@@ -264,7 +267,7 @@ function Get-Json {
     return $result
 }
 
-# helper to turn PSCustomObject into a list of key/value pairs
+# Helper to turn PSCustomObject into a list of key/value pairs
 function Get-ObjectMembers {
     [CmdletBinding()]
     Param(
@@ -283,7 +286,7 @@ function Write-ProgressHelper {
         [int]$StepNumber,
         [string]$Message
     )
-    Write-Progress -Activity 'Modifing the Pure Storage SCOM Management Pack' -Status $Message -PercentComplete (($StepNumber / $steps) * 100)
+    Write-Progress -Activity 'Modifing the Pure Storage FlashArray SCOM Management Pack' -Status $Message -PercentComplete (($StepNumber / $steps) * 100)
 }
 
 function End {
@@ -294,26 +297,30 @@ function End {
         Stop-Transcript
     }
 }
+#### END HELPER FUNCTIONS
 
 <#
 .SYNOPSIS
-  Enable/Disable logging to array for Systems Center Operations Manager and Pure Storage FlashArray SCOM Management Pack.
+  Enable/Disable logging to array for the Pure Storage FlashArray SCOM Management Pack.
 .DESCRIPTION
-  This script will programatically set the LogToArray parameter in all rules, discoveries, & monitors in the Pure Storage SCOM Management Pack for FlashArray to either true or false. Disabling this logging will reduce the amount of log entries generated on the array by the MP.
+  This script will programatically create a new override management pack and set the LogToArray parameter in all rules, discoveries, & monitors to either true or false. Disabling this logging will reduce the amount of log entries generated on the array by the management pack.
 .PARAMETER OverridesManagementPackName
-    Required. This is the name of the new management pack override necessary to set the new value.
+    Required. This is the name of the NEW management pack override necessary to set the new value. If an existing management pack name is specified, the cmdlet will create a new override management pack with the same name (allowed by SCOM) and will most likely produce on-screen errors.
 .PARAMETER LogToArray
-    Required. Set to "true" or "false".
+    Required. Set to "$true" or "$false".
 .PARAMETER ScriptLog
     If set to $true, this will enable the PowerShell Start-Transcript cmdlet to log all verbose output. The default log location is in the script root.
 .INPUTS
   None
 .OUTPUTS
-  Results can also be viewed in the SCOM audit logs.
+  Results can also be viewed in the SCOM event log.
 .EXAMPLE
   Set-LoggingToArray -OverridesManagementPackName "MyOverride" -LogToArray $true -ScriptLog $true
+
+  Creates a new override management pack called "MyOverride", sets the LoggingToArray parameter in that MP to $true, and creates a log of all activities done by the command.
   #>
 
+  #region Set-LoggingToArray
 function Set-LoggingToArray {
     param(
         [Parameter(Mandatory = $true)]
@@ -337,9 +344,9 @@ function Set-LoggingToArray {
     }
 
     Write-Host " "
-    Write-host "Beginning processing..."
-    Write-Host "Depending on SCOM environment, this may take several minutes to complete."
-    Write-Host "Do not close this session until script has finished."
+    Write-host "Begin processing..."
+    Write-Host "Depending on the SCOM environment complexity and size, this may take several minutes to complete."
+    Write-Host "*Caution: Do not close this session until the script has finished." -ForgroundColor Yellow
     Write-Host " "
     Start-Sleep 2
 
@@ -348,14 +355,16 @@ function Set-LoggingToArray {
     $mp = Get-SCOMManagementPack -Name PureStorageFlashArray
     if (!$mp) {
         Write-Error "Failed to find management pack 'PureStorageFlashArray'"
+        Write-Error "The Pure Storage FlashArray SCOM Management Pack must be installed before running this cmdlet."
+        Write-Error "Exiting."
         End -ScriptLog $Scriptlog
         exit
     }
 
     Write-ProgressHelper -Message 'Creating Management Pack Override' -StepNumber ($stepCounter++)
     $overrides_mp = Get-SCOMManagementPack -Name $OverridesManagementPackName
-    if (!$overrides_mp) {
-        Write-Host "Creating management pack $OverridesManagementPackName..."
+    if ($null -eq $overrides_mp) {
+        Write-Host "Management pack does not exist. Creating management pack $OverridesManagementPackName..."
         CreateManagementPack -Name $OverridesManagementPackName
     }
     Write-ProgressHelper -Message 'Processing Rules' -StepNumber ($stepCounter++)
@@ -368,18 +377,22 @@ function Set-LoggingToArray {
     Set-MonitorsLogToArrayOverrides -ManagementPack $mp -OverridesManagementPack $overrides_mp
     End -ScriptLog $Scriptlog
 }
+#endregion
 
+#region Update-Overrides
 <#
 .SYNOPSIS
-  Update discovery workflows stored in overrides management pack
+  Update discovery workflows stored in an override management pack.
 .DESCRIPTION
-  This script will update code for initial discovery stored in the overrides management pack
+  This script will update code for the initial discovery stored in the override management pack.
 .PARAMETER OverridesManagementPackName
-    Required. This is the name of the overrides management pack.
+    Required. This is the name of the existing override management pack. This management pack name must exist.
 .PARAMETER ScriptLog
     If set to $true, this will enable the PowerShell Start-Transcript cmdlet to log all verbose output. The default log location is in the script root.
  EXAMPLE
   Update-Overrides -OverridesManagementPackName "MyOverride"
+
+  The discovery workflows will be updated in the "MyOverride" management pack.
   #>
 function Update-Overrides {
     param (
@@ -396,9 +409,9 @@ function Update-Overrides {
     }
 
     Write-Host " "
-    Write-host "Beginning processing..."
-    Write-Host "Depending on SCOM environment, this may take several minutes to complete."
-    Write-Host "Do not close this session until script has finished."
+    Write-host "Begin processing..."
+    Write-Host "Depending on complexity and size of the SCOM environment, this may take several minutes to complete."
+    Write-Host "*Caution: Do not close this session until script has finished." -ForegroundColor yellow
     Write-Host " "
     Start-Sleep 2
 
@@ -408,13 +421,17 @@ function Update-Overrides {
     $mp = Get-SCOMManagementPack -Name PureStorageFlashArray
     if (!$mp) {
         Write-Error "Failed to find management pack 'PureStorageFlashArray'"
+        Write-Error "The Pure Storage FlashArray SCOM Management Pack must be installed before running this cmdlet."
+        Write-Error "Exiting."
         End -ScriptLog $Scriptlog
         exit
     }
 
     $overrides_mp = Get-SCOMManagementPack -DisplayName $OverridesManagementPackName
-    if (!$overrides_mp) {
+    if ($null -eq $overrides_mp) {
         Write-Error "Failed to find management pack '$OverridesManagementPackName'"
+        Write-Error "The specified management pack must exist."
+        Write-Error "Exiting."
         End -ScriptLog $Scriptlog
         exit
     }
@@ -450,14 +467,16 @@ function Update-Overrides {
     Remove-Item -Path $temp_dir -Recurse -Force
     End -ScriptLog $Scriptlog
 }
+#endregion
 
+#region Set-OverridableConfig
 <#
 .SYNOPSIS
-  Creates overrides for overridable configuration parameters
+  Creates overrides for overridable configuration parameters specified in json format.
 .DESCRIPTION
-  This script will create overrides for overridable configuration parameters
+  This script will create overrides for overridable configuration parameters in either an existing or new override management pack.
 .PARAMETER OverridesConfigPath
-    Required. Path to JSON file that includes overrides information in the following format:.
+    Required. Path to JSON file that includes overrides information. The JSON is in the following format:
     {
     "monitor":  {
         "<monitor name>>":  {
@@ -504,11 +523,13 @@ function Update-Overrides {
     }
 
 .PARAMETER OverridesManagementPackName
-    Required. This is the name of the overrides management pack.
+    Required. This is the name of the override management pack. If this management pack does not exist, it will be created.
 .PARAMETER ScriptLog
     If set to $true, this will enable the PowerShell Start-Transcript cmdlet to log all verbose output. The default log location is in the script root.
 .EXAMPLE
-  Set-OverridableConfig -OverridesConfigPath "MyConfigOverrides.json"  -OverridesManagementPackName "MyOverridesMP"
+  Set-OverridableConfig -OverridesConfigPath "MyConfigOverrides.json"  -OverridesManagementPackName "MyOverrides"
+
+  Retrieves the configuration from the "MyConfigOverrides.json" file and inserts them into the "MyOverrides" management pack.
  #>
 
 function Set-OverridableConfig {
@@ -527,9 +548,9 @@ function Set-OverridableConfig {
     }
 
     Write-Host " "
-    Write-host "Beginning processing..."
-    Write-Host "Depending on SCOM environment, this may take several minutes to complete."
-    Write-Host "Do not close this session until script has finished."
+    Write-host "Begin processing..."
+    Write-Host "Depending on complexity and size of the SCOM environment, this may take several minutes to complete."
+    Write-Host "*Caution: Do not close this session until script has finished." -ForegroundColor yellow
     Write-Host " "
     Start-Sleep 2
 
@@ -539,12 +560,14 @@ function Set-OverridableConfig {
     $mp = Get-SCOMManagementPack -Name PureStorageFlashArray
     if (!$mp) {
         Write-Error "Failed to find management pack 'PureStorageFlashArray'"
+        Write-Error "The Pure Storage FlashArray SCOM Management Pack must be installed before running this cmdlet."
+        Write-Error "Exiting."
         End -ScriptLog $Scriptlog
         exit
     }
     $overrides_mp = Get-SCOMManagementPack -Name $OverridesManagementPackName
-    if (!$overrides_mp) {
-        Write-Host "Creating management pack $OverridesManagementPackName..."
+    if ($null -eq $overrides_mp) {
+        Write-Host "Management pack does not exist. Creating management pack $OverridesManagementPackName..."
         CreateManagementPack -Name $OverridesManagementPackName
         $overrides_mp = Get-SCOMManagementPack -Name $OverridesManagementPackName
     }
@@ -579,6 +602,7 @@ function Set-OverridableConfig {
     }
     End -ScriptLog $Scriptlog
 }
+#endregion
 
 Export-ModuleMember -Function Set-LoggingToArray
 Export-ModuleMember -Function Update-Overrides
