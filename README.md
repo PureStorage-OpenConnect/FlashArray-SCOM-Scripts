@@ -13,6 +13,6 @@ This diagnostic script runs various tests to ensure a proper Management Pack con
 
 A collection helper functions to facilitate managing Pure Storage Management Pack Overrides. Functions included:
 
-`Set-LoggingToArray` - Enable/Disable logging to array for Systems Center Operations Manager and Pure Storage FlashArray SCOM Management Pack.
-`Set-OverrideableConfig` - Create overrides for overridable configuration parameters
-`Update-Overrides` -  Update discovery workflows stored in overrides management pack
+* `Set-LoggingToArray` - Enable/Disable logging to array for Systems Center Operations Manager and Pure Storage FlashArray SCOM Management Pack. *
+* `Set-OverrideableConfig` - Create overrides for overridable configuration parameters *
+* `Update-Overrides` -  Update discovery workflows stored in overrides management pack *
