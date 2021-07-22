@@ -1,6 +1,6 @@
 <#
   Test-PureSCOMSettings.ps1
-  Version:        1.0
+  Version:        1.0.1.0
   Author:         Hesham Anan, Mike Nelson @ Pure Storage
 .SYNOPSIS
   Helper functions to facilitate the diagnostic testing of a SCOM Management Server settings for the Pure Storage SCOM Management Pack.
@@ -12,7 +12,7 @@
   Array endpoiint
 .OUTPUTS
   Diagnostic outputs for every test.
-  Randomly named transcript file located in the default user Documents folder
+  Randomly named transcript file located in the current user Documents folder
 .EXAMPLE
 Test-PureSCOMSettings.ps1 -EndPoint $ArrayIPAddress
 
@@ -30,31 +30,45 @@ Start-Transcript
 
 # Obtain FA Credentials
 Write-Host ""
-Write-Host "Please supply the FlashArray username and password."
+Write-Host "Please supply the FlashArray username and password." -ForegroundColor Yellow
 Write-Host ""
 $Creds = Get-Credential
+
+# Get SCOM environment Information
+$mgmtserver = Get-SCOMManagementServer | format-table -AutoSize
+$mgmtserver
+$gwserver = Get-SCOMGatewayManagementServer
+if (!($gwserver)) {
+  Write-Host "No Gateway Server found. Continuing..." -ForegroundColor Yellow
+}
+$respool = Get-SCOMResourcePool
+if (!($respool)) {
+  Write-Host "No Resource Pools found. Continuing..." -ForegroundColor Yellow
+}
 
 # Verify management Pack installation
 $MPName = 'PureStorageFlashArray'
 $MP = Get-SCOMManagementPack -Name $MPName
 if (!$MP) {
-    Write-Error "Pure Storage FlashArray Management Pack is not installed. Script will stop."
+    Write-Host "ERROR: Pure Storage FlashArray Management Pack is not installed. Script will stop." -ForegroundColor Red
     break
 }
 else {
     Write-Host "Management Pack is installed." -ForegroundColor Green
 }
 Write-host "Continuing..."
- # Verify registry entry for the SDK
- Write-Host "Verifying the registry entry exists for the Pure Storage PowerShell SDK module..."
+
+# Verify registry entry for the SDK
+Write-Host "Verifying the registry entry exists for the Pure Storage PowerShell SDK module..."
 $RegistryPath = "HKLM:\SOFTWARE\PureStorage\SCOM\PowerShellSDKPath"
 $SDKKey = Get-ItemProperty -Path $RegistryPath
 if ($null -eq $SDKKey -or $null -eq $SDKKey.'(default)') {
-    Write-Error "Failed to find $RegistryPath in registry."
+    Write-Host "ERROR: Failed to find $RegistryPath in registry." -ForegroundColor Red
     return
 }
 else {
     Write-Host "$RegistryPath exists." -ForegroundColor Green
+    Write-Host ""
     Write-Host "Pleae ensure that the service account that SCOM runs scripts as also has access to this registry key."
 }
 Write-Host ""
@@ -62,20 +76,22 @@ Write-Host "Continuing..."
 
 #Set variables
 $SDKPath = $SDKKey.'(default)'
-$SDKPath
+Write-Host "Key Path = $SDKPath"
 
 # Test 443 & SSH connection to array
 Write-Host ""
 Write-Host "Testing network connectivity to the array..."
 $testports = @("443","22")
 foreach ($testport in $testports) {
-    $results = Test-NetConnection -Port $testport -InformationLevel Detailed -ComputerName $ArrayAddress
+    $results = Test-NetConnection -Port $testport -ComputerName $ArrayAddress
     $testresult = $results.TcpTestSucceeded
         if ($testresult -eq 'True') {
-            Write-Host "Port $testport success." -ForegroundColor Green
+          Write-Host ""
+          Write-Host "Port $testport success." -ForegroundColor Green
 }
         else{
-            Write-Error "Port $testport failed."
+          Write-Host ""
+          Write-Host "ERROR: Port $testport failed." -ForegroundColor Red
 }
 }
 Write-Host ""
@@ -86,14 +102,14 @@ Write-host "Testing the ability to log into the array via the SDK..."
 try {
     $pathtest = Test-Path $SDKPath -PathType leaf
     if ($pathtest -eq $false) {
-        Write-Error "Path to SDK DLL file does not exist or is incorrect."
+        Write-Host "ERROR: Path to SDK DLL file does not exist or is incorrect." -ForegroundColor Red
     }
-    Import-Module $SDKPath -Verbose -Force
+    Import-Module $SDKPath -Force
     Get-Module PureStoragePowerShellSDK
     Get-Module -ListAvailable | Where-Object -Property Name -eq PureStoragePowerShellSDK | Format-Table -GroupBy Path
     $FlashArray = New-PfaArray -EndPoint $ArrayAddress -Credentials $Creds -IgnoreCertificateError
     if ($null -eq $FlashArray) {
-        Write-Error "Failed to connect to array. Check the logs."
+        Write-Host "ERROR: Failed to connect to array. Check the logs." -ForegroundColor Red
     }
     else {
         Write-Host "Successfully connected to array $ArrayAddress" -ForegroundColor Green
@@ -101,7 +117,7 @@ try {
     }
 }
 finally {
-    Write-Host "Script completed."
+    Write-Host "Script completed." -ForegroundColor Yellow
     Stop-Transcript
 }
 
