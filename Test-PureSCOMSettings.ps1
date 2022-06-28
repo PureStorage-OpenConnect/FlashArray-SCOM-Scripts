@@ -88,24 +88,122 @@ else {
   Write-Host "--------------------"
 }
 Write-Host ""
-# Verify registry entry for the SDK
-Write-Host "INFO: Verifying the registry entry exists for the Pure Storage PowerShell SDK module..." -ForegroundColor Green
-Write-Host ""
-$RegistryPath = "HKLM:\SOFTWARE\PureStorage\SCOM\PowerShellSDKPath"
-$SDKKey = Get-ItemProperty -Path $RegistryPath
-if ($null -eq $SDKKey -or $null -eq $SDKKey.'(default)') {
-  Write-Host "ERROR: Failed to find $RegistryPath in registry." -ForegroundColor Red
+
+function Get-Configuration($folder) {
+  $xml    = [xml]'<configuration/>'
+
+  $method = [Microsoft.EnterpriseManagement.Configuration.ManagementPackFolder].GetMethod('GetItems')
+  $closed = $method.MakeGenericMethod([Microsoft.EnterpriseManagement.Configuration.ManagementPackDiscovery])
+
+  $discovery = $closed.Invoke($folder, @()) | where Name -match 'seed' | select -first 1
+
+  xml.DocumentElement.InnerXml = $discovery.DataSource.Configuration
+
+  return $xml.configuration
+}
+
+# Test endpoint
+$template_name   = 'PureStorageFlashArray.UITemplate.Template'
+$folder_name     = 'PureStorageFlashArray.UITemplate.Folder'
+$seed_class_name = 'PureStorage.FlashArray.PureArraySeed'
+$profile_name    = 'PureStorage.FlashArray.FlashArrayAdminAccount'
+
+$adminProfile = $MP.GetSecureReference($profile_name)
+$items = $MP.GetTemplate($template_name).GetFolders() 
+  | where Name -eq $folder_name
+  | ForEach-Object { $_.GetSubFolders() }
+
+if (!$items) {
+  Write-Host "ERROR: Pure Storage FlashArray Endpoint template not found. Script will stop." -ForegroundColor Red
   Write-Host "--------------------"
-  return
+  break
 }
 else {
-  Write-Host "INFO: $RegistryPath exists." -ForegroundColor Green
+  Write-Host "INFO: $($items.Count) endpoint template instance(s) have been found." -ForegroundColor Green
   Write-Host "--------------------"
   Write-Host ""
-  Write-Host "INFO: Pleae ensure that the SCOM Action Account also has access to this registry key." -ForegroundColor Green
-  Write-Host "--------------------"
 }
-Write-Host ""
+
+$seed_class       = Get-SCOMClass -Name $seed_class_name
+$seed_id_property = $seed_class.GetProperties() | where Name -eq 'TemplateId' | select -first 1
+
+$endpoints = Get-SCOMClassInstance -Class $seed_class
+
+foreach ($item in $items) {
+  $config = Get-Configuration $item
+
+  $endpoint = $endpoints | where {$_.Item($seed_id_property).Value -eq $config.Id} | select -first 1
+
+  if (!$endpoint) {
+    Write-Host "ERROR: $($config.Endpoint) endpoint object (seed) not found. Script will stop." -ForegroundColor Red
+    Write-Host "--------------------"
+    break
+  }
+  else {
+    Write-Host "INFO: $($config.Endpoint) endpoint template instance have been found." -ForegroundColor Green
+    Write-Host "--------------------"
+    Write-Host ""
+  }
+
+  $pool = Get-SCOMResourcePool -Id $config.Pool
+
+  if (!$pool) {
+    Write-Host "ERROR: $($config.Endpoint) endpoint Resource Pool ($pool) not found. Script will stop." -ForegroundColor Red
+    Write-Host "--------------------"
+    break
+  }
+  else {
+    Write-Host "INFO: $($config.Endpoint) endpoint Resource Pool ($pool) found." -ForegroundColor Green
+    Write-Host "--------------------"
+    Write-Host ""
+  }
+
+  $overrides = $endpoint.GetResultantOverrides($adminProfile).ResultantSecureReferenceOverrides
+
+  if (!$overrides.ContainsKey('SecureReferenceId')) {
+    Write-Host "ERROR: $($config.Endpoint) endpoint Run As Account not set. Script will stop." -ForegroundColor Red
+    Write-Host "--------------------"
+    break
+  }
+  else {
+    Write-Host "INFO: $($config.Endpoint) endpoint Run As Account is configured." -ForegroundColor Green
+    Write-Host "--------------------"
+    Write-Host ""
+  }
+
+  $ssid    = $overrides['SecureReferenceId'].EffectiveValue
+  $account = Get-SCOMRunAsAccount
+    | where {$ssid -eq ([string]::Join($null, ($_.SecureStorageId | ForEach-Object {$_.ToString('X2')})))}
+    | select -first 1
+
+  if (!$account) {
+    Write-Host "ERROR: $($config.Endpoint) endpoint Run As Account ($ssid) not found. Script will stop." -ForegroundColor Red
+    Write-Host "--------------------"
+    break
+  }
+  else {
+    Write-Host "INFO: $($config.Endpoint) endpoint Run As Account ($ssid) found." -ForegroundColor Green
+    Write-Host "--------------------"
+    Write-Host ""
+  }
+
+  $distribution = Get-SCOMRunAsDistribution -RunAsAccount $account
+
+  if ($distribution.Security -eq 'MoreSecure') {
+    [guid[]]$ds = $distribution.SecureDistribution | ForEach-Object {$_.Id}
+
+    if (!$ds.Contains($pool.Id)) {
+      Write-Host "ERROR: $($config.Endpoint) endpoint Run As Account $($account.Name) is not distributed to $($pool.DisplayName) pool. Script will stop." -ForegroundColor Red
+      Write-Host "--------------------"
+      break
+    }
+    else {
+      Write-Host "INFO: $($config.Endpoint) endpoint Run As Account $($account.Name) is distributed to $($pool.DisplayName) pool." -ForegroundColor Green
+      Write-Host "--------------------"
+      Write-Host ""
+    }
+  }
+}
 
 # Test 443 & SSH connection to array
 Write-Host ""
@@ -152,23 +250,12 @@ If ($TestPorts -eq "true") {
 }
 Write-Host ""
 
-$SDKPath = $SDKKey.'(default)'
 # Test array login
 Write-Host "INFO: Testing the ability to log into the array via the SDK..." -ForegroundColor Green
 Write-Host ""
-Write-Host "INFO: SDK Key Path = $SDKPath" -ForegroundColor Green
-Write-Host ""
 try {
-  $pathtest = Test-Path $SDKPath -PathType leaf
-  if ($pathtest -eq $false) {
-    Write-Host "ERROR: Path to SDK DLL file does not exist or is incorrect." -ForegroundColor Red
-    Write-Host "--------------------"
-  }
-  Import-Module $SDKPath -Force
-  Write-Host "INFO: Module information:" -ForegroundColor Green
-  Get-Module PureStoragePowerShellSDK
-  Get-Module -ListAvailable | Where-Object -Property Name -EQ PureStoragePowerShellSDK | Format-Table -GroupBy Path
-  Write-Host "--------------------"
+  Import-Module  PureStoragePowerShellSDK
+
   Write-Host ""
   Write-Host "INFO: Connecting to array..." -ForegroundColor Green
   Write-Host ""
